@@ -443,6 +443,7 @@ mouseaction(XEvent *e, uint release)
 	/* ignore Button<N>mask for Button<N> - it's set on release */
 	uint state = e->xbutton.state & ~buttonmask(e->xbutton.button);
 
+    if (tisaltscr()) {
 	for (ms = mshortcuts; ms < mshortcuts + LEN(mshortcuts); ms++) {
 		if (ms->release == release &&
 		    ms->button == e->xbutton.button &&
@@ -450,6 +451,7 @@ mouseaction(XEvent *e, uint release)
 		     match(ms->mod, state & ~forcemousemod))) {
 			ms->func(&(ms->arg));
 			return 1;
+        }
 		}
 	}
 
@@ -471,12 +473,12 @@ bpress(XEvent *e)
 	if (mouseaction(e, 0))
 		return;
 
-	for (mk = mkeys; mk < mkeys + LEN(mkeys); mk++) {
-		if (e->xbutton.button == mk->b
-				&& match(mk->mask, e->xbutton.state)) {
-			mk->func(&mk->arg);
-			return;
-		}
+    for (mk = mkeys; mk < mkeys + LEN(mkeys); mk++) {
+        if (e->xbutton.button == mk->b
+                && match(mk->mask, e->xbutton.state)) {
+            mk->func(&mk->arg);
+            return;
+        }
 	}
 
 	if (e->xbutton.button == Button1) {
