@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+static char *font = "JetBrainsMono Nerd Font:pixelsize=15:antialias=true:autohint=true";
 static int borderpx = 2;
 
 /*
@@ -178,8 +178,14 @@ static uint forcemousemod = ShiftMask;
 static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
-	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
-	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
+	// { XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
+	// { XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
+};
+
+MouseKey mkeys[] = {
+   /* button               mask            function        argument */
+    { Button4,              ShiftMask,      kscrollup,      {.i =  1} },
+    { Button5,              ShiftMask,      kscrolldown,    {.i =  1} },
 };
 
 /* Internal keyboard shortcuts. */
