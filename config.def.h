@@ -1,4 +1,14 @@
 /* See LICENSE file for copyright and license details. */
+/* applied patches:
+ * st-alpha-0.8.2.diff
+ * st-bold-is-not-bright-20190127-3be4cf1.diff
+ * st-boxdraw_v2-0.8.2.diff
+ * st-scrollback-0.8.2.diff
+ * st-scrollback-mouse-0.8.2.diff
+ * st-scrollback-mouse-altscreen-0.8.diff
+ * st-scrollback-mouse-increment-0.8.2.diff
+ *
+ */
 
 /*
  * appearance
@@ -96,6 +106,9 @@ char *termname = "st-256color";
  */
 unsigned int tabspaces = 8;
 
+/* bg opacity */
+float alpha = 0.85;
+
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
@@ -164,6 +177,14 @@ static unsigned int mousebg = 0;
  * doesn't match the ones requested.
  */
 static unsigned int defaultattr = 11;
+/// Colors for the entities that are 'highlighted' in normal mode (search
+/// results currently on screen) [Vim Browse].
+static unsigned int highlightBg = 160;
+static unsigned int highlightFg = 15;
+/// Colors for highlighting the current cursor position (row + col) in normal
+/// mode [Vim Browse].
+static unsigned int currentBg = 8;
+static unsigned int currentFg = 15;
 
 /*
  * Force mouse select/shortcuts while mask is active (when MODE_MOUSE is set).
@@ -190,10 +211,12 @@ MouseKey mkeys[] = {
 
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
+#define AltMask Mod1Mask
 #define TERMMOD (ControlMask|ShiftMask)
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
+	// { AltMask,              XK_c,           normalMode,     {.i =  0} },
 	{ XK_ANY_MOD,           XK_Break,       sendbreak,      {.i =  0} },
 	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
 	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
@@ -208,6 +231,8 @@ static Shortcut shortcuts[] = {
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 };
 
 /*
@@ -479,3 +504,24 @@ static char ascii_printable[] =
 	" !\"#$%&'()*+,-./0123456789:;<=>?"
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
 	"`abcdefghijklmnopqrstuvwxyz{|}~";
+
+/// Style of the command string visualized in normal mode in the right corner
+/// [Vim Browse].
+Glyph const styleCommand = {' ', ATTR_ITALIC | ATTR_FAINT, 7, 16};
+/// Style of the search string visualized in normal mode in the right corner.
+/// [Vim Browse].
+Glyph const styleSearch = {' ', ATTR_ITALIC | ATTR_BOLD_FAINT, 7, 16};
+
+/// Colors used in normal mode in order to highlight different operations and
+/// empathise the current position on screen  in  the status area [Vim Browse].
+unsigned int bgCommandYank = 11;
+unsigned int bgCommandVisual = 4;
+unsigned int bgCommandVisualLine = 12;
+
+unsigned int fgCommandYank = 232;
+unsigned int fgCommandVisual = 232;
+unsigned int fgCommandVisualLine = 232;
+
+unsigned int bgPos = 15;
+unsigned int fgPos = 16;
+
